@@ -1,13 +1,14 @@
 import re
+
 from langchain.tools import StructuredTool
 from langchain_core.output_parsers import BaseOutputParser, StrOutputParser
 from langchain_core.prompts import PromptTemplate
+from langchain_experimental.utilities import PythonREPL
+from langchain_openai import ChatOpenAI
 
 from Utils.CallbackHandlers import ColoredPrintHandler
 from Utils.PrintUtils import CODE_COLOR
-from langchain_openai import ChatOpenAI
-from .ExcelTool import get_first_n_rows, get_column_names
-from langchain_experimental.utilities import PythonREPL
+from .ExcelTool import get_first_n_rows
 
 
 class PythonCodeParser(BaseOutputParser):
@@ -42,7 +43,7 @@ class ExcelAnalyser:
     """
 
     def __init__(self, prompt_file="./prompts/tools/excel_analyser.txt", verbose=False):
-        self.prompt = PromptTemplate.from_file(prompt_file)
+        self.prompt = PromptTemplate.from_file(prompt_file, encoding='utf-8')
         self.verbose = verbose
         self.verbose_handler = ColoredPrintHandler(CODE_COLOR)
 
