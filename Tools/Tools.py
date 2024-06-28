@@ -9,6 +9,10 @@ from .ExcelTool import get_first_n_rows
 from .FileTool import list_files_in_directory
 from .FinishTool import finish
 
+
+""""
+用LangChain封装成Tool
+"""
 document_qa_tool = StructuredTool.from_function(
     func=ask_docment,
     name="AskDocument",

@@ -55,7 +55,7 @@ class ExcelAnalyser:
         inspections = get_first_n_rows(filename, 3)
 
         llm = ChatOpenAI(
-            model="gpt-4-1106-preview",
+            model="gpt-4o",
             temperature=0,
             model_kwargs={
                 "seed": 42

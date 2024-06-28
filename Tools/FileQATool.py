@@ -8,7 +8,9 @@ from langchain.document_loaders.word_document import UnstructuredWordDocumentLoa
 from langchain.chains import RetrievalQA
 from langchain.llms import OpenAI
 
-
+"""
+相当于简易的RAG
+"""
 class FileLoadFactory:
     @staticmethod
     def get_loader(filename: str):
@@ -30,7 +32,7 @@ def load_docs(filename: str) -> List[Document]:
     pages = file_loader.load_and_split()
     return pages
 
-
+# 实现一个简易的基于Langchain内置的RAG 后续可以基于RAG的课程重新改造
 def ask_docment(
         filename: str,
         query: str,

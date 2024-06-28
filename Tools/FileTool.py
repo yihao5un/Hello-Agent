@@ -1,6 +1,8 @@
 import os
 
-
+"""
+查看目录下的文件
+"""
 def list_files_in_directory(path: str) -> str:
     """List all file names in the directory"""
     file_names = os.listdir(path)
