@@ -125,6 +125,7 @@ def main():
         ).as_tool()
     ]
 
+    # AgentOutputParser 这个格式是固定的 需要重写MyAgentOutputParser
     parser = MyAgentOutputParser()
 
     prompt = PromptTemplate.from_file("./prompts/main/main.txt")

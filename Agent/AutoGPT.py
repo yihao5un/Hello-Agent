@@ -33,7 +33,8 @@ from Utils.CallbackHandlers import *
 1. **输出解析**: 使用`PydanticOutputParser`和`OutputFixingParser`确保AI输出能被解析为具体的`Action`对象，便于执行。
 2. **初始化提示模板**: 通过读取`main_prompt_file`内容，并结合历史对话和工具描述，构建一个复合的提示模板，用于引导AI的思考和决策。
 3. **链式逻辑构造**: 利用LangChain的链式API (`|`操作符) 构建从提示生成到模型响应再到解析输出的整个处理流程。
-4. **思考与执行循环 (`__step`方法)**: 在给定的最大思考步数内，AI会根据当前任务、已有的对话历史和短时记忆（由`ConversationTokenBufferMemory`管理）来决定下一步行动。每一步都包括生成行动指令、解析指令、执行工具操作并记录结果。
+4. **思考与执行循环 (`__step`方法)**: 在给定的最大思考步数内，AI会根据当前任务、已有的对话历史和短时记忆（由`ConversationTokenBufferMemory`管理）来决定下一步行动。
+每一步都包括生成行动指令、解析指令、执行工具操作并记录结果。
 5. **工具执行 (`__exec_action`方法)**: 根据解析出的`Action`找到相应的工具并执行，捕获可能发生的异常（如参数验证失败或执行错误）。
 6. **运行 (`run`方法)**: 接受用户任务、对话历史和是否开启详细日志模式，启动整个决策和执行流程。过程中，AI会不断迭代思考，更新短时记忆，并最终返回执行结果或达到思考步数上限时的错误信息。
 
@@ -65,7 +66,8 @@ class AutoGPT:
     ```
     在这个例子中，`my_static_method`是一个静态方法，可以直接通过类名`MyClass.my_static_method()`来调用，而不需要创建`MyClass`的实例。
     ===================================================================================================================
-    在Java中，与Python的`@staticmethod`相对应的概念是静态方法（static method）。在Java中，你使用`static`关键字来声明一个方法为静态方法。和Python一样，Java的静态方法也属于类本身，而不是类的某个特定实例，因此可以通过类名直接调用，而无需创建类的实例。
+    在Java中，与Python的`@staticmethod`相对应的概念是静态方法（static method）。
+    在Java中，你使用`static`关键字来声明一个方法为静态方法。和Python一样，Java的静态方法也属于类本身，而不是类的某个特定实例，因此可以通过类名直接调用，而无需创建类的实例。
     例如，Java中的静态方法看起来像这样：
     ```java
     public class MyClass {
@@ -83,13 +85,17 @@ class AutoGPT:
     """
     这段代码定义了一个名为`__format_short_term_memory`的静态方法，它属于某个类（虽然上下文未给出类名，但从使用`@staticmethod`装饰器推测）。此方法的功能是将短期对话记忆（`memory`）中的消息内容转换为一个字符串，其中每一项消息内容之间用换行符分隔。
     - **参数**:
-      - `memory: BaseChatMemory`: 表示输入参数`memory`是一个`BaseChatMemory`类型的对象，这是LangChain中用于存储聊天记录的基类。这个对象中包含了聊天的交互历史，每个交互通常由一个`message`表示。
+      - `memory: BaseChatMemory`: 表示输入参数`memory`是一个`BaseChatMemory`类型的对象，这是LangChain中用于存储聊天记录的基类。
+      这个对象中包含了聊天的交互历史，每个交互通常由一个`message`表示。
     - **方法细节**:
-      - `messages = memory.chat_memory.messages`: 获取`memory`对象中的所有消息记录。这里假设`BaseChatMemory`有一个属性`chat_memory`，它又有一个属性`messages`，存储了所有的消息。
+      - `messages = memory.chat_memory.messages`: 获取`memory`对象中的所有消息记录。
+      这里假设`BaseChatMemory`有一个属性`chat_memory`，它又有一个属性`messages`，存储了所有的消息。
     - **列表推导式**:
-      - `[messages[i].content for i in range(1, len(messages))]`: 从消息列表中（除了第一条消息外，因为索引从1开始），提取每个消息的内容（`.content`属性）到一个新的列表`string_messages`中。这样做通常是因为第一条消息可能是系统消息或无关紧要的上下文，但具体原因需依据实际应用场景而定。
+      - `[messages[i].content for i in range(1, len(messages))]`: 从消息列表中（除了第一条消息外，因为索引从1开始），
+      提取每个消息的内容（`.content`属性）到一个新的列表`string_messages`中。这样做通常是因为第一条消息可能是系统消息或无关紧要的上下文，但具体原因需依据实际应用场景而定。
     - **返回值**:
-      - `return "\n".join(string_messages)`: 将`string_messages`列表中的所有字符串元素用换行符`\n`连接起来，形成一个单一的字符串，表示所有聊天消息的连续文本内容，每条消息占一行。
+      - `return "\n".join(string_messages)`: 将`string_messages`列表中的所有字符串元素用换行符`\n`连接起来，形成一个单一的字符串，
+      表示所有聊天消息的连续文本内容，每条消息占一行。
     **注意**：由于这是一个静态方法，它不依赖于类的实例状态，这意味着在调用该方法时，不需要类的实例，可以直接通过类名调用，如`MyClass.__format_short_term_memory(some_memory_instance)`。不过，由于该方法名前有两个下划线`__`，这通常表明它是类的私有方法，意在限制外部直接访问，通常只在类内部使用。
     """
     # 没用原生的 而是自己拼的
@@ -121,6 +127,7 @@ class AutoGPT:
         self.main_prompt_file = main_prompt_file
         self.max_thought_steps = max_thought_steps
 
+        """ 输出解析: 使用PydanticOutputParser和OutputFixingParser确保AI输出能被解析为具体的Action对象，便于执行。 """
         # OutputFixingParser： 如果输出格式不正确，尝试修复
         self.output_parser = PydanticOutputParser(pydantic_object=Action)
         self.robust_parser = OutputFixingParser.from_llm(
@@ -132,7 +139,9 @@ class AutoGPT:
             )
         )
 
+        """ 初始化提示模板: 通过读取main_prompt_file内容，并结合历史对话和工具描述，构建一个复合的提示模板，用于引导AI的思考和决策。"""
         self.__init_prompt_templates()
+        """ 链式逻辑构造: 利用LangChain的链式API (|操作符) 构建从提示生成到模型响应再到解析输出的整个处理流程 """
         self.__init_chains()
         # 创建回调函数 为了显示中间步骤
         self.verbose_handler = ColoredPrintHandler(color=THOUGHT_COLOR)
@@ -141,7 +150,12 @@ class AutoGPT:
     加载 prompt 文件
     """
     def __init_prompt_templates(self):
+        """
+        读取主提示文件: 方法首先通过with open(self.main_prompt_file, 'r', encoding='utf-8') as f:打开指定的main_prompt_file文件。
+        这个文件通常包含一个或多个模板字符串，用于指导AI模型如何理解和生成回应。文件内容通过f.read()一次性读取。
+        """
         with open(self.main_prompt_file, 'r', encoding='utf-8') as f:
+            """ 构建聊天提示模板: 使用ChatPromptTemplate.from_messages方法创建一个聊天提示模板 """
             self.prompt = ChatPromptTemplate.from_messages(
                 [
                     # 存放历史多轮对话
@@ -151,17 +165,34 @@ class AutoGPT:
                     HumanMessagePromptTemplate.from_template(f.read()),
                 ]
             ).partial(
-                # partial 启动之前的都写上了
+                # partial 启动之前的都写上了 预先设定了一些固定的参数值
+                # work_dir: 设置工作目录路径。
                 work_dir=self.work_dir,
+                # tools: 通过render_text_description(self.tools)将工具列表转换为描述性文本，以便在生成的提示中告知AI可使用的工具及其描述。
                 tools=render_text_description(self.tools),
+                # tool_names: 将所有工具的名字用逗号连接后作为一个字符串，用于标识可用的工具列表。
                 # tool_names langchain原生模版中有
                 tool_names=','.join([tool.name for tool in self.tools]),
+                # format_instructions: 从self.output_parser获取输出格式的指示，告诉AI模型期望的输出结构应该遵循哪种格式（这通常与前面定义的Action模型相关联）。
                 # 选择执行的动作/工具 输出的格式
                 format_instructions=self.output_parser.get_format_instructions(),
             )
 
     def __init_chains(self):
         # 主流程的chain
+        """
+        Prompt: self.prompt，这是在__init_prompt_templates方法中初始化并配置好的聊天提示模板。它负责生成与AI模型交互的具体输入文本，包含了历史对话、当前轮次的指令或问题以及必要的上下文信息
+        LLM (Large Language Model): self.llm，表示大型语言模型，比如OpenAI的GPT系列、阿里云的通义千问等。
+            这部分是处理和生成文本的核心，接收来自self.prompt的输入，根据其内部逻辑和训练，产生相应的回答或执行结果。
+        StrOutputParser: 这是一个输出解析器，用于处理LLM产生的原始输出，将其转化为更易于应用消费的格式。
+            例如，如果LLM返回的是自由格式的文本，而应用需要结构化的数据，输出解析器就可以负责从中提取关键信息或按照特定格式整理输出。
+        """
+        """
+        链的构建: 使用管道(|)符号串联这三个组件，形成了一个处理流程：
+        首先，根据场景和历史对话生成一个具体的提示（prompt）；
+        接着，这个提示被传递给大型语言模型（LLM）进行处理，生成原始的响应；
+        最后，响应通过StrOutputParser转换为最终所需的格式。
+        """
         self.main_chain = (self.prompt | self.llm | StrOutputParser())
 
     def __find_tool(self, tool_name: str) -> Optional[BaseTool]:
@@ -170,6 +201,10 @@ class AutoGPT:
                 return tool
         return None
 
+    """ 
+    思考与执行循环 (__step方法): 在给定的最大思考步数内，AI会根据当前任务、已有的对话历史和短时记忆（由ConversationTokenBufferMemory管理）来决定下一步行动。
+    每一步都包括生成行动指令、解析指令、执行工具操作并记录结果。 
+    """
     def __step(self,
                task,
                short_term_memory,
@@ -202,6 +237,9 @@ class AutoGPT:
         action = self.robust_parser.parse(response)
         return action, response
 
+    """
+    工具执行 (__exec_action方法): 根据解析出的Action找到相应的工具并执行，捕获可能发生的异常（如参数验证失败或执行错误）。
+    """
     def __exec_action(self, action: Action) -> str:
         # 查找工具
         tool = self.__find_tool(action.name)
@@ -226,7 +264,8 @@ class AutoGPT:
         return observation
 
     """
-    运行
+    运行 (run方法): 接受用户任务、对话历史和是否开启详细日志模式，启动整个决策和执行流程。
+    过程中，AI会不断迭代思考，更新短时记忆，并最终返回执行结果或达到思考步数上限时的错误信息。
     """
     def run(
             self,
