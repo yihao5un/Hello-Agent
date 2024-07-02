@@ -8,3 +8,5 @@ python-dotenv==1.0.1
 chroma-hnswlib==0.7.2
 chromadb==0.4.5
 tiktoken==0.7.0
+requests~=2.32.3
+openai~=1.35.7
